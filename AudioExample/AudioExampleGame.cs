@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace AudioExample
 {
@@ -11,13 +13,16 @@ namespace AudioExample
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        
+
         private CoinSprite[] coins;
         private SlimeGhostSprite slimeGhost;
         private SpriteFont spriteFont;
         private int coinsLeft;
 
         private Texture2D ball;
+        private SoundEffect coinPickup;
+        private Song BackgroundMusic;
+
 
         /// <summary>
         /// A game demonstrating collision detection
@@ -64,6 +69,11 @@ namespace AudioExample
             slimeGhost.LoadContent(Content);
             spriteFont = Content.Load<SpriteFont>("arial");
             ball = Content.Load<Texture2D>("ball");
+
+            coinPickup = Content.Load<SoundEffect>("Pickup_Coin15");
+            BackgroundMusic = Content.Load<Song>("DeeYan-Key-TheGame");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(BackgroundMusic);
         }
 
         /// <summary>
@@ -82,11 +92,12 @@ namespace AudioExample
             slimeGhost.Color = Color.White;
             foreach (var coin in coins)
             {
-                if(!coin.Collected && coin.Bounds.CollidesWith(slimeGhost.Bounds))
+                if (!coin.Collected && coin.Bounds.CollidesWith(slimeGhost.Bounds))
                 {
                     slimeGhost.Color = Color.Red;
                     coin.Collected = true;
                     coinsLeft--;
+                    coinPickup.Play();
                 }
             }
 
@@ -120,7 +131,7 @@ namespace AudioExample
             spriteBatch.Draw(ball, rectG, Color.White);
             */
             slimeGhost.Draw(gameTime, spriteBatch);
-            spriteBatch.DrawString(spriteFont, $"Coins left: {coinsLeft}", new Vector2(2,2), Color.Gold);
+            spriteBatch.DrawString(spriteFont, $"Coins left: {coinsLeft}", new Vector2(2, 2), Color.Gold);
             spriteBatch.End();
 
             base.Draw(gameTime);
